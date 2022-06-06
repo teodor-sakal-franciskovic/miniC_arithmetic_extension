@@ -29,6 +29,7 @@
   int num_of_lambda_params = 0;
   int curr_params = 0;
   int lambda_call_is_active = 0;
+  int lambda_init_is_active = 0;
   
   unsigned curr_type;
   
@@ -174,31 +175,54 @@ assignment_statement
   ;
 
 lambda_statement
-  : _ID _ASSIGN lambda_exp _SEMICOLON
+
+  : _ID _ASSIGN
+  //{
+        //code("\n%s:", $1);
+        //code("\n\t\tPUSH\t%%14");
+        //code("\n\t\tMOV \t%%15,%%14");
+  //}
+   lambda_exp _SEMICOLON
   {
-  	int idx = lookup_symbol($1, LAMBDA_FUN);
-  	if (idx == NO_INDEX)
+  	fun_idx = lookup_symbol($1, LAMBDA_FUN);
+  	if (fun_idx == NO_INDEX)
   	{
-  	  //atr1 je broj parametara lambda f-je, atr2 redni broj lambda funkcije
-  	  insert_symbol($1, LAMBDA_FUN, curr_type, curr_params, lambda_fun_num);
+  	  //atr1 je broj parametara lambda f-je, atr2 je redni broj lambda funkcije
+  	  fun_idx = insert_symbol($1, LAMBDA_FUN, curr_type, curr_params, lambda_fun_num);
   	  lambda_fun_num++;
+  	  
+  	  clear_symbols(fun_idx + 1);
+	
+	  code("\n@lambda_%s_exit:", $1);
+	  code("\n\t\tMOV \t%%14,%%15");
+	  code("\n\t\tPOP \t%%14");
+	  code("\n\t\tRET");
   	}
   	else
   	{
   	  err("Lambda function '%s' already exists", $1);
   	}
+  	
   }
   ;
   
 lambda_exp
   : _LAMBDA lambda_parameters
-  {
+  {	
+  	lambda_init_is_active = 1;
 	lambda_fun_param_amounts[lambda_fun_param_amounts_position] = num_of_lambda_params;
 	curr_params = num_of_lambda_params;
 	num_of_lambda_params = 0;
 	lambda_fun_param_amounts_position++;
+	
+	code("\n\t\tSUBS\t%%15,$%d,%%15", 4*curr_params);
+        code("\n@lambda_%s_body:", get_name(fun_idx));
+	
   } 
     _COLON num_exp
+  {
+  	lambda_init_is_active = 0;
+  }
   ;
   
 lambda_parameters
@@ -273,7 +297,7 @@ exp
          }
         
         
-        if (lambda_call_is_active == 0) {
+        if (lambda_init_is_active == 1) {
           	int idx = lookup_lambda_symbol($1, LAMBDA, lambda_fun_num);
           	//mozda visak ceo ovaj deo, izuci
 		if (idx != NO_INDEX)
@@ -374,12 +398,9 @@ lambda_call
       	int num_of_args = get_atr1(fcall_idx);
         if(get_atr1(fcall_idx) != num_of_lambda_arguments)
           err("wrong number of arguments '%d', '%d'", num_of_args, num_of_lambda_arguments);
-        code("\n\t\t\tCALL\t%s", get_name(fcall_idx));
+        code("\n\t\t\tCALL\tlambda_%s", get_name(fcall_idx));
         int i;
-        for (i = 0; i < num_of_lambda_arguments; i++)
-        {
-          code("\n\t\t\tADDS\t%%15,$%d,%%15", 4);
-        }  
+          code("\n\t\t\tADDS\t%%15,$%d,%%15", num_of_lambda_arguments*4); 
         num_of_lambda_arguments = 0;
         set_type(FUN_REG, get_type(fcall_idx));
         $$ = FUN_REG;
