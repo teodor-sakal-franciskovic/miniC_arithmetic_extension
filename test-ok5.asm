@@ -23,7 +23,7 @@ main:
 		MOV 	%15,%14
 @lambda_x_body:
 		MULS	8(%14),12(%14),%0
-		ADDS	%0,12(%14),%0
+		ADDS	%0,8(%14),%0
 		ADDS	%0,16(%14),%0
 		MOV 	%0,%13
 @lambda_x_exit:
@@ -33,9 +33,9 @@ main:
 @main_body_0:
 		MOV 	$10,-4(%14)
 		MOV 	$1,-8(%14)
-		PUSH	-4(%14)
-		PUSH	-8(%14)
 		PUSH	$3
+		PUSH	$7
+		PUSH	$5
 		CALL	@lambda_x
 		ADDS	%15,$12,%15
 		MOV 	%13,%0

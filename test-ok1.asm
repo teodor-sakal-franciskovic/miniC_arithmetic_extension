@@ -19,8 +19,8 @@ main:
 @main_body_0:
 		MOV 	$2,-8(%14)
 		MOV 	$3,-12(%14)
-		PUSH	$3
 		PUSH	-8(%14)
+		PUSH	$3
 		CALL	@lambda_x
 		ADDS	%15,$8,%15
 		MOV 	%13,%0

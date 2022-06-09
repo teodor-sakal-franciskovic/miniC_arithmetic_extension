@@ -1,4 +1,4 @@
-//RETURN: 20
+//RETURN: 43
 int foo(int a){
    int b;
    b = a + 2;
@@ -10,9 +10,9 @@ int main(){
    int e;
    int f;
    
-   lambda x = int a, int b, int c : a * b + b + c;
+   lambda x = int a, int b, int c : a * b + a + c; //43
    d = 10;
    e = 1;
-   f = lambda x(d, e, 3);
+   f = lambda x(5, 7, 3);
    return f;
 }

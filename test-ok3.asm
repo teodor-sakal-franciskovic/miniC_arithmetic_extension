@@ -16,8 +16,8 @@ main:
 		POP 	%14
 		RET
 @main_body_0:
-		PUSH	$2
 		PUSH	$3
+		PUSH	$2
 		CALL	@lambda_x
 		ADDS	%15,$8,%15
 		MOV 	%13,%0
@@ -37,8 +37,8 @@ main:
 		MOV 	$5,-12(%14)
 		MOV 	$5,-16(%14)
 		ADDS	-12(%14),-16(%14),%0
-		PUSH	%0
 		PUSH	-16(%14)
+		PUSH	%0
 		CALL	@lambda_y
 		ADDS	%15,$8,%15
 		MOV 	%13,%0

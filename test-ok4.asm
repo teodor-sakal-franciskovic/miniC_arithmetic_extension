@@ -37,8 +37,8 @@ main:
 			CALL	foo
 			ADDS	%15,$4,%15
 		MOV 	%13,%0
-		PUSH	%0
 		PUSH	$5
+		PUSH	%0
 		CALL	@lambda_x
 		ADDS	%15,$8,%15
 		MOV 	%13,%0

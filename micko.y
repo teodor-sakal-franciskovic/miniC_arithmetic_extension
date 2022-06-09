@@ -32,6 +32,9 @@
   int lambda_call_is_active = 0;
   int lambda_init_is_active = 0;
   
+  int curr_fun_params[100];
+  int curr_fun_params_index = 0;
+  
   unsigned curr_type;
   char * curr_lambda_id;
   int main_part = 0;
@@ -404,11 +407,19 @@ lambda_call
       {
         lambda_call_is_active = 1;
         fcall_idx = lookup_symbol($2, LAMBDA_FUN);
+        lambda_idx = lookup_symbol($2, LAMBDA_FUN);
         if(fcall_idx == NO_INDEX)
           err("'%s' is not a lambda function", $2);
       }
     _LPAREN lambda_arguments _RPAREN
       {
+        int i;
+        for (i = curr_fun_params_index - 1; i > -1; i--){
+          code("\n\t\tPUSH\t");
+      	  gen_sym_name(curr_fun_params[i]);
+      	  curr_fun_params[i] = 0;
+        }
+        curr_fun_params_index = 0;
         // opet, zato sto je num_exp potencijalno poziv funkcije, pa se promeni fcall_idx
         fcall_idx = lookup_symbol($2, LAMBDA_FUN);
       	int num_of_args = get_atr1(fcall_idx);
@@ -451,12 +462,12 @@ argument
 lambda_argument
   : num_exp
     {
-      if(get_type(fcall_idx) != get_type($1))
+      if(get_type(lambda_idx) != get_type($1))
         err("incompatible type for argument '%d' and '%d'", fcall_idx, $1);
       free_if_reg($1);
-      code("\n\t\tPUSH\t");
-      gen_sym_name($1);
-      $$ = 1;    
+      curr_fun_params[curr_fun_params_index] = $1;
+      curr_fun_params_index++;
+      $$ = 1;
     }
   ;
 

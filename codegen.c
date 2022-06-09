@@ -44,7 +44,6 @@ void gen_sym_name(int index) {
         code("%d(%%14)", 4 + get_atr1(index) *4);
       else
       	if(get_kind(index) == LAMBDA){
-      	 //code("%d(%%14)", 4 + (num_of_params - get_atr2(index) + 1) * 4);
       	 code("%d(%%14)", 4 + get_atr2(index) * 4);
       	}
       	else
