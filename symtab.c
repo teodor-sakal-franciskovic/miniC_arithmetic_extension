@@ -83,6 +83,15 @@ int lookup_lambda_symbol(char *name, unsigned kind, unsigned atr1){
   return -1;
 }
 
+int lookup_lambda_function(unsigned atr2, unsigned kind){
+  int i;
+  for (i = first_empty - 1; i > FUN_REG; i--) {
+    if (symbol_table[i].kind, kind && symbol_table[i].atr2 & atr2)
+      return i;
+  }
+  return -1;
+}
+
 void set_name(int index, char *name) {
   if(index > -1 && index < SYMBOL_TABLE_LENGTH)
     symbol_table[index].name = name;

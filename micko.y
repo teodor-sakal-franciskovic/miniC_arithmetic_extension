@@ -17,6 +17,7 @@
   int warning_count = 0;
   int var_num = 0;
   int fun_idx = -1;
+  int lambda_idx = -1; //mozda visak
   int fcall_idx = -1;
   int lab_num = -1;
   
@@ -32,6 +33,8 @@
   int lambda_init_is_active = 0;
   
   unsigned curr_type;
+  char * curr_lambda_id;
+  int main_part = 0;
   
   FILE *output;
 %}
@@ -176,38 +179,42 @@ assignment_statement
 
 lambda_statement
 
-  : _ID _ASSIGN
-  //{
-        //code("\n%s:", $1);
-        //code("\n\t\tPUSH\t%%14");
-        //code("\n\t\tMOV \t%%15,%%14");
-  //}
-   lambda_exp _SEMICOLON
+  :_LAMBDA _ID 
+    {
+    	curr_lambda_id = $2;
+    	code("\n\t\tJMP \t@%s_body_%d", get_name(fun_idx), main_part);
+        code("\n@lambda_%s:", $2);
+        code("\n\t\tPUSH\t%%14");
+        code("\n\t\tMOV \t%%15,%%14");
+    } 
+  _ASSIGN lambda_exp _SEMICOLON
   {
-  	fun_idx = lookup_symbol($1, LAMBDA_FUN);
-  	if (fun_idx == NO_INDEX)
+  	lambda_idx = lookup_symbol($2, LAMBDA_FUN);
+  	if (lambda_idx == NO_INDEX)
   	{
   	  //atr1 je broj parametara lambda f-je, atr2 je redni broj lambda funkcije
-  	  fun_idx = insert_symbol($1, LAMBDA_FUN, curr_type, curr_params, lambda_fun_num);
+  	  lambda_idx = insert_symbol($2, LAMBDA_FUN, curr_type, curr_params, lambda_fun_num);
   	  lambda_fun_num++;
   	  
-  	  clear_symbols(fun_idx + 1);
+  	  clear_symbols(lambda_idx + 1);
 	
-	  code("\n@lambda_%s_exit:", $1);
+	  code("\n@lambda_%s_exit:", $2);
 	  code("\n\t\tMOV \t%%14,%%15");
 	  code("\n\t\tPOP \t%%14");
 	  code("\n\t\tRET");
+	  code("\n@main_body_%d:", main_part);
+	  main_part++;	
   	}
   	else
   	{
-  	  err("Lambda function '%s' already exists", $1);
+  	  err("Lambda function '%s' already exists", $2);
   	}
   	
   }
   ;
   
 lambda_exp
-  : _LAMBDA lambda_parameters
+  : lambda_parameters
   {	
   	lambda_init_is_active = 1;
 	lambda_fun_param_amounts[lambda_fun_param_amounts_position] = num_of_lambda_params;
@@ -215,13 +222,13 @@ lambda_exp
 	num_of_lambda_params = 0;
 	lambda_fun_param_amounts_position++;
 	
-	code("\n\t\tSUBS\t%%15,$%d,%%15", 4*curr_params);
-        code("\n@lambda_%s_body:", get_name(fun_idx));
+        code("\n@lambda_%s_body:", curr_lambda_id);
 	
   } 
     _COLON num_exp
   {
   	lambda_init_is_active = 0;
+  	gen_mov($4, FUN_REG);
   }
   ;
   
@@ -238,13 +245,12 @@ lambda_parameter
   	if (idx == NO_INDEX)
   	{
   	  curr_type = $1;
-  	  //atr1 je redni broj lambda funkcije kojoj simbol pripada
-  	  insert_symbol($2, LAMBDA, $1, lambda_fun_num, NO_ATR);
+  	  //atr1 je redni broj lambda funkcije kojoj simbol pripada, atr2 je redni broj parametra u f-ji
+  	  insert_symbol($2, LAMBDA, $1, lambda_fun_num, num_of_lambda_params+1);
   	  int updated_idx = lookup_lambda_symbol($2, LAMBDA, lambda_fun_num);
   	  lambda_values[lambda_values_position] = updated_idx;
 	  lambda_values_position++;
 	  num_of_lambda_params++;
-	  $$ = $1;
   	}
   	else
   	{
@@ -283,8 +289,16 @@ exp
   : literal
 
   | _ID
-      {   
-        $$ = lookup_symbol($1, VAR|PAR|LAMBDA);
+      { 
+      	if (lambda_init_is_active == 1)
+      	{
+      	  $$ = lookup_symbol($1, LAMBDA);
+      	}
+      	else
+      	{
+      	  $$ = lookup_symbol($1, VAR|PAR);
+      	}
+        
         if($$ == NO_INDEX)
           err("'%s' undeclared", $1);
         
@@ -395,12 +409,13 @@ lambda_call
       }
     _LPAREN lambda_arguments _RPAREN
       {
+        // opet, zato sto je num_exp potencijalno poziv funkcije, pa se promeni fcall_idx
+        fcall_idx = lookup_symbol($2, LAMBDA_FUN);
       	int num_of_args = get_atr1(fcall_idx);
         if(get_atr1(fcall_idx) != num_of_lambda_arguments)
           err("wrong number of arguments '%d', '%d'", num_of_args, num_of_lambda_arguments);
-        code("\n\t\t\tCALL\tlambda_%s", get_name(fcall_idx));
-        int i;
-          code("\n\t\t\tADDS\t%%15,$%d,%%15", num_of_lambda_arguments*4); 
+        code("\n\t\tCALL\t@lambda_%s", get_name(fcall_idx));
+        code("\n\t\tADDS\t%%15,$%d,%%15", num_of_lambda_arguments*4); 
         num_of_lambda_arguments = 0;
         set_type(FUN_REG, get_type(fcall_idx));
         $$ = FUN_REG;
@@ -427,7 +442,7 @@ argument
       if(get_type(fcall_idx) != get_type($1))
         err("incompatible type for argument '%d' and '%d'", fcall_idx, $1);
       free_if_reg($1);
-      code("\n\t\t\tPUSH\t");
+      code("\n\t\tPUSH\t");
       gen_sym_name($1);
       $$ = 1;
     }
@@ -439,7 +454,7 @@ lambda_argument
       if(get_type(fcall_idx) != get_type($1))
         err("incompatible type for argument '%d' and '%d'", fcall_idx, $1);
       free_if_reg($1);
-      code("\n\t\t\tPUSH\t");
+      code("\n\t\tPUSH\t");
       gen_sym_name($1);
       $$ = 1;    
     }

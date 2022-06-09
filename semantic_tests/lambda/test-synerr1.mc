@@ -1,6 +1,6 @@
 //nedostaje tip parametra
 
 int main(){
-  x = lambda int b, c, int g : c + b + g;
+  lambda x = int b, c, int g : c + b + g;
   return 2;
 }

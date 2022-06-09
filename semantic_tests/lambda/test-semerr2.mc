@@ -4,6 +4,6 @@ int main(){
   
   int a;
   
-  x = lambda int b, int b, int g : b + g;
+  lambda x = int b, int b, int g : b + g;
   return 2;
 }

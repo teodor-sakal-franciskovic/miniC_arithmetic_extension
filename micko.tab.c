@@ -86,6 +86,7 @@
   int warning_count = 0;
   int var_num = 0;
   int fun_idx = -1;
+  int lambda_idx = -1; //mozda visak
   int fcall_idx = -1;
   int lab_num = -1;
   
@@ -101,10 +102,12 @@
   int lambda_init_is_active = 0;
   
   unsigned curr_type;
+  char * curr_lambda_id;
+  int main_part = 0;
   
   FILE *output;
 
-#line 108 "micko.tab.c"
+#line 111 "micko.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -179,12 +182,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 39 "micko.y"
+#line 42 "micko.y"
 
   int i;
   char *s;
 
-#line 188 "micko.tab.c"
+#line 191 "micko.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -503,16 +506,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  6
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   79
+#define YYLAST   77
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  23
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  36
+#define YYNNTS  37
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  55
+#define YYNRULES  56
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  95
+#define YYNSTATES  98
 
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   277
@@ -561,12 +564,12 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    73,    73,    81,    82,    87,    86,   112,   114,   124,
-     123,   133,   134,   138,   148,   149,   153,   154,   155,   156,
-     157,   161,   165,   179,   211,   210,   229,   230,   234,   258,
-     259,   271,   272,   283,   285,   345,   351,   357,   362,   365,
-     371,   370,   390,   389,   411,   415,   423,   425,   437,   449,
-     452,   458,   463,   457,   476,   486
+       0,    76,    76,    84,    85,    90,    89,   115,   117,   127,
+     126,   136,   137,   141,   151,   152,   156,   157,   158,   159,
+     160,   164,   168,   183,   182,   218,   217,   236,   237,   241,
+     264,   265,   277,   278,   289,   291,   359,   365,   371,   376,
+     379,   385,   384,   404,   403,   426,   430,   438,   440,   452,
+     464,   467,   473,   478,   472,   491,   501
 };
 #endif
 
@@ -581,11 +584,11 @@ static const char *const yytname[] =
   "_AROP", "_PAROP", "_RELOP", "ONLY_IF", "$accept", "program",
   "function_list", "function", "$@1", "parameter", "body", "$@2",
   "variable_list", "variable", "statement_list", "statement",
-  "compound_statement", "assignment_statement", "lambda_statement",
-  "lambda_exp", "$@3", "lambda_parameters", "lambda_parameter", "num_exp",
-  "parop_exp", "exp", "literal", "function_call", "$@4", "lambda_call",
-  "$@5", "lambda_arguments", "argument", "lambda_argument", "if_statement",
-  "if_part", "@6", "$@7", "rel_exp", "return_statement", YY_NULLPTR
+  "compound_statement", "assignment_statement", "lambda_statement", "$@3",
+  "lambda_exp", "$@4", "lambda_parameters", "lambda_parameter", "num_exp",
+  "parop_exp", "exp", "literal", "function_call", "$@5", "lambda_call",
+  "$@6", "lambda_arguments", "argument", "lambda_argument", "if_statement",
+  "if_part", "@7", "$@8", "rel_exp", "return_statement", YY_NULLPTR
 };
 #endif
 
@@ -600,12 +603,12 @@ static const yytype_int16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF (-49)
+#define YYPACT_NINF (-51)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
 
-#define YYTABLE_NINF (-41)
+#define YYTABLE_NINF (-42)
 
 #define yytable_value_is_error(Yyn) \
   0
@@ -614,16 +617,16 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      10,    14,    22,    10,   -49,   -49,   -49,   -49,    34,    29,
-      39,    38,   -49,    40,   -49,   -49,    48,    46,   -49,   -49,
-      41,    -2,   -49,    44,     9,    43,   -49,   -49,   -49,   -49,
-     -49,   -49,   -49,    50,   -49,   -49,    49,   -49,   -49,     9,
-      51,   -12,    42,   -49,   -49,   -49,   -49,    20,    35,     2,
-       9,    53,     1,   -49,   -49,     9,     9,    30,    45,    19,
-     -49,   -49,    24,   -49,     9,   -49,    54,    42,   -49,    59,
-      52,   -49,   -49,   -49,     9,    56,    55,    57,     9,   -49,
-      58,    60,    55,     2,   -49,    55,    13,   -49,   -49,     9,
-     -49,   -49,     9,    55,   -49
+       0,     5,    38,     0,   -51,   -51,   -51,   -51,    17,    39,
+      37,    34,   -51,    35,   -51,   -51,    43,    42,   -51,   -51,
+      36,    -2,   -51,    40,    -1,    41,   -51,   -51,    45,   -51,
+     -51,   -51,   -51,   -51,    48,   -51,   -51,    44,   -51,   -51,
+      -1,    49,     3,    46,   -51,   -51,   -51,   -51,    -1,    13,
+     -51,    27,    -1,    47,     2,   -51,   -51,    -1,    -1,    21,
+     -51,    50,   -51,    16,   -51,    -1,   -51,    51,    46,   -51,
+     -51,    55,    -1,    52,    53,    54,    -1,    60,    58,    56,
+     -51,    53,    27,   -51,    53,    12,   -51,   -51,   -51,    55,
+      59,   -51,   -51,    -1,   -51,    -1,   -51,    53
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -633,32 +636,32 @@ static const yytype_int8 yydefact[] =
 {
        0,     0,     0,     2,     3,     5,     1,     4,     0,     7,
        0,     0,     8,     0,    11,     6,     9,     0,    14,    12,
-       0,     0,    13,     0,     0,     0,    14,    10,    15,    16,
-      17,    20,    18,    49,    19,    51,    34,    38,    39,     0,
-       0,     0,    29,    31,    33,    35,    36,     0,     0,     0,
-       0,     0,     0,    42,    55,     0,     0,     0,     0,     0,
-      21,    50,     0,    52,    46,    37,     0,    30,    32,     0,
-      24,    26,    23,    22,     0,     0,    47,     0,     0,    28,
-       0,     0,    54,     0,    41,    48,     0,    44,    27,     0,
-      53,    43,     0,    25,    45
+       0,     0,    13,     0,     0,     0,    14,    10,     0,    15,
+      16,    17,    20,    18,    50,    19,    52,    35,    39,    40,
+       0,     0,     0,    30,    32,    34,    36,    37,     0,     0,
+      23,     0,     0,     0,     0,    43,    56,     0,     0,     0,
+      21,     0,    51,     0,    53,    47,    38,     0,    31,    33,
+      22,     0,     0,     0,    48,     0,     0,     0,     0,    25,
+      27,    55,     0,    42,    49,     0,    45,    29,    24,     0,
+       0,    54,    44,     0,    28,     0,    46,    26
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -49,   -49,   -49,    66,   -49,   -49,   -49,   -49,   -49,   -49,
-      47,   -48,   -49,   -49,   -49,   -49,   -49,   -49,    -9,   -24,
-      17,    23,   -49,   -49,   -49,   -49,   -49,   -49,   -49,   -17,
-     -49,   -49,   -49,   -49,   -49,   -49
+     -51,   -51,   -51,    57,   -51,   -51,   -51,   -51,   -51,   -51,
+      33,   -50,   -51,   -51,   -51,   -51,   -51,   -51,   -51,   -27,
+     -24,    11,    19,   -51,   -51,   -51,   -51,   -51,   -51,   -51,
+     -23,   -51,   -51,   -51,   -51,   -51,   -51
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
       -1,     2,     3,     4,     8,    11,    15,    18,    16,    19,
-      21,    28,    29,    30,    31,    58,    81,    70,    71,    85,
-      42,    43,    44,    45,    51,    46,    66,    86,    77,    87,
-      32,    33,    50,    75,    63,    34
+      21,    29,    30,    31,    32,    61,    78,    90,    79,    80,
+      84,    43,    44,    45,    46,    53,    47,    67,    85,    75,
+      86,    33,    34,    52,    73,    64,    35
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -666,26 +669,26 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      41,    61,    23,    54,    24,    25,    23,    55,    24,    25,
-      26,    27,    65,     1,    26,    52,    36,    37,    38,    39,
-      55,     5,     6,    59,    91,    40,    62,    36,    37,    38,
-      39,    92,    10,    69,    73,    90,    57,    53,    55,    23,
-      76,    24,    25,    55,     9,    74,    12,    26,    60,    13,
-      82,    17,    14,    20,    35,    49,    22,    47,    53,   -40,
-      72,    69,    56,    64,    78,    93,    79,    83,    84,     7,
-      80,    88,    67,    48,    55,    94,     0,    89,     0,    68
+      42,    62,    23,     1,    24,    25,    37,    38,    39,    40,
+      26,    27,     5,    66,    28,    41,    54,    23,    56,    24,
+      25,    57,    57,    92,    59,    26,    60,     9,    63,    28,
+      93,    23,    91,    24,    25,    57,    70,    72,     6,    26,
+      57,    74,    10,    28,    12,    13,    17,    14,    81,    20,
+      36,    22,    50,    51,   -41,    48,    55,    65,    77,    49,
+       7,    76,    94,    82,    71,    83,    58,    87,    68,     0,
+      96,    97,    57,    88,    89,     0,    95,    69
 };
 
 static const yytype_int8 yycheck[] =
 {
-      24,    49,     4,    15,     6,     7,     4,    19,     6,     7,
-      12,    13,    11,     3,    12,    39,     7,     8,     9,    10,
-      19,     7,     0,    47,    11,    16,    50,     7,     8,     9,
-      10,    18,     3,     3,    15,    83,    16,     7,    19,     4,
-      64,     6,     7,    19,    10,    21,     7,    12,    13,    11,
-      74,     3,    12,     7,    10,     5,    15,    14,     7,    10,
-      15,     3,    20,    10,    10,    89,     7,    11,    11,     3,
-      18,    80,    55,    26,    19,    92,    -1,    17,    -1,    56
+      24,    51,     4,     3,     6,     7,     7,     8,     9,    10,
+      12,    13,     7,    11,    16,    16,    40,     4,    15,     6,
+       7,    19,    19,    11,    48,    12,    13,    10,    52,    16,
+      18,     4,    82,     6,     7,    19,    15,    21,     0,    12,
+      19,    65,     3,    16,     7,    11,     3,    12,    72,     7,
+      10,    15,     7,     5,    10,    14,     7,    10,     3,    26,
+       3,    10,    89,    11,    14,    11,    20,     7,    57,    -1,
+      93,    95,    19,    15,    18,    -1,    17,    58
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -694,14 +697,14 @@ static const yytype_int8 yystos[] =
 {
        0,     3,    24,    25,    26,     7,     0,    26,    27,    10,
        3,    28,     7,    11,    12,    29,    31,     3,    30,    32,
-       7,    33,    15,     4,     6,     7,    12,    13,    34,    35,
-      36,    37,    53,    54,    58,    10,     7,     8,     9,    10,
-      16,    42,    43,    44,    45,    46,    48,    14,    33,     5,
-      55,    47,    42,     7,    15,    19,    20,    16,    38,    42,
-      13,    34,    42,    57,    10,    11,    49,    43,    44,     3,
-      40,    41,    15,    15,    21,    56,    42,    51,    10,     7,
-      18,    39,    42,    11,    11,    42,    50,    52,    41,    17,
-      34,    11,    18,    42,    52
+       7,    33,    15,     4,     6,     7,    12,    13,    16,    34,
+      35,    36,    37,    54,    55,    59,    10,     7,     8,     9,
+      10,    16,    43,    44,    45,    46,    47,    49,    14,    33,
+       7,     5,    56,    48,    43,     7,    15,    19,    20,    43,
+      13,    38,    34,    43,    58,    10,    11,    50,    44,    45,
+      15,    14,    21,    57,    43,    52,    10,     3,    39,    41,
+      42,    43,    11,    11,    43,    51,    53,     7,    15,    18,
+      40,    34,    11,    18,    42,    17,    53,    43
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
@@ -709,10 +712,10 @@ static const yytype_int8 yyr1[] =
 {
        0,    23,    24,    25,    25,    27,    26,    28,    28,    30,
       29,    31,    31,    32,    33,    33,    34,    34,    34,    34,
-      34,    35,    36,    37,    39,    38,    40,    40,    41,    42,
-      42,    43,    43,    44,    44,    44,    44,    44,    45,    45,
-      47,    46,    49,    48,    50,    50,    51,    51,    52,    53,
-      53,    55,    56,    54,    57,    58
+      34,    35,    36,    38,    37,    40,    39,    41,    41,    42,
+      43,    43,    44,    44,    45,    45,    45,    45,    45,    46,
+      46,    48,    47,    50,    49,    51,    51,    52,    52,    53,
+      54,    54,    56,    57,    55,    58,    59
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -720,10 +723,10 @@ static const yytype_int8 yyr2[] =
 {
        0,     2,     1,     1,     2,     0,     7,     0,     2,     0,
        5,     0,     2,     3,     0,     2,     1,     1,     1,     1,
-       1,     3,     4,     4,     0,     5,     1,     3,     2,     1,
-       3,     1,     3,     1,     1,     1,     1,     3,     1,     1,
-       0,     5,     0,     6,     1,     3,     0,     1,     1,     1,
-       3,     0,     0,     7,     3,     3
+       1,     3,     4,     0,     6,     0,     4,     1,     3,     2,
+       1,     3,     1,     3,     1,     1,     1,     1,     3,     1,
+       1,     0,     5,     0,     6,     1,     3,     0,     1,     1,
+       1,     3,     0,     0,     7,     3,     3
 };
 
 
@@ -1419,16 +1422,16 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 74 "micko.y"
+#line 77 "micko.y"
       {  
         if(lookup_symbol("main", FUN) == NO_INDEX)
           err("undefined reference to 'main'");
       }
-#line 1428 "micko.tab.c"
+#line 1431 "micko.tab.c"
     break;
 
   case 5:
-#line 87 "micko.y"
+#line 90 "micko.y"
       {
         fun_idx = lookup_symbol((yyvsp[0].s), FUN);
         if(fun_idx == NO_INDEX)
@@ -1440,11 +1443,11 @@ yyreduce:
         code("\n\t\tPUSH\t%%14");
         code("\n\t\tMOV \t%%15,%%14");
       }
-#line 1444 "micko.tab.c"
+#line 1447 "micko.tab.c"
     break;
 
   case 6:
-#line 99 "micko.y"
+#line 102 "micko.y"
       {
         clear_symbols(fun_idx + 1);
         var_num = 0;
@@ -1454,48 +1457,48 @@ yyreduce:
         code("\n\t\tPOP \t%%14");
         code("\n\t\tRET");
       }
-#line 1458 "micko.tab.c"
+#line 1461 "micko.tab.c"
     break;
 
   case 7:
-#line 112 "micko.y"
+#line 115 "micko.y"
       { set_atr1(fun_idx, 0); }
-#line 1464 "micko.tab.c"
+#line 1467 "micko.tab.c"
     break;
 
   case 8:
-#line 115 "micko.y"
+#line 118 "micko.y"
       {
         insert_symbol((yyvsp[0].s), PAR, (yyvsp[-1].i), 1, NO_ATR);
         set_atr1(fun_idx, 1);
         set_atr2(fun_idx, (yyvsp[-1].i));
       }
-#line 1474 "micko.tab.c"
+#line 1477 "micko.tab.c"
     break;
 
   case 9:
-#line 124 "micko.y"
+#line 127 "micko.y"
       {
         if(var_num)
           code("\n\t\tSUBS\t%%15,$%d,%%15", 4*var_num);
         code("\n@%s_body:", get_name(fun_idx));
       }
-#line 1484 "micko.tab.c"
+#line 1487 "micko.tab.c"
     break;
 
   case 13:
-#line 139 "micko.y"
+#line 142 "micko.y"
       {
         if(lookup_symbol((yyvsp[-1].s), VAR|PAR) == NO_INDEX)
            insert_symbol((yyvsp[-1].s), VAR, (yyvsp[-2].i), ++var_num, NO_ATR);
         else 
            err("redefinition of '%s'", (yyvsp[-1].s));
       }
-#line 1495 "micko.tab.c"
+#line 1498 "micko.tab.c"
     break;
 
   case 22:
-#line 166 "micko.y"
+#line 169 "micko.y"
       {
         int idx = lookup_symbol((yyvsp[-3].s), VAR|PAR);
         if(idx == NO_INDEX)
@@ -1505,37 +1508,51 @@ yyreduce:
             err("incompatible types in assignment");
         gen_mov((yyvsp[-1].i), idx);
       }
-#line 1509 "micko.tab.c"
+#line 1512 "micko.tab.c"
     break;
 
   case 23:
-#line 186 "micko.y"
-  {
-  	fun_idx = lookup_symbol((yyvsp[-3].s), LAMBDA_FUN);
-  	if (fun_idx == NO_INDEX)
-  	{
-  	  //atr1 je broj parametara lambda f-je, atr2 je redni broj lambda funkcije
-  	  fun_idx = insert_symbol((yyvsp[-3].s), LAMBDA_FUN, curr_type, curr_params, lambda_fun_num);
-  	  lambda_fun_num++;
-  	  
-  	  clear_symbols(fun_idx + 1);
-	
-	  code("\n@lambda_%s_exit:", (yyvsp[-3].s));
-	  code("\n\t\tMOV \t%%14,%%15");
-	  code("\n\t\tPOP \t%%14");
-	  code("\n\t\tRET");
-  	}
-  	else
-  	{
-  	  err("Lambda function '%s' already exists", (yyvsp[-3].s));
-  	}
-  	
-  }
-#line 1535 "micko.tab.c"
+#line 183 "micko.y"
+    {
+    	curr_lambda_id = (yyvsp[0].s);
+    	code("\n\t\tJMP \t@%s_body_%d", get_name(fun_idx), main_part);
+        code("\n@lambda_%s:", (yyvsp[0].s));
+        code("\n\t\tPUSH\t%%14");
+        code("\n\t\tMOV \t%%15,%%14");
+    }
+#line 1524 "micko.tab.c"
     break;
 
   case 24:
-#line 211 "micko.y"
+#line 191 "micko.y"
+  {
+  	lambda_idx = lookup_symbol((yyvsp[-4].s), LAMBDA_FUN);
+  	if (lambda_idx == NO_INDEX)
+  	{
+  	  //atr1 je broj parametara lambda f-je, atr2 je redni broj lambda funkcije
+  	  lambda_idx = insert_symbol((yyvsp[-4].s), LAMBDA_FUN, curr_type, curr_params, lambda_fun_num);
+  	  lambda_fun_num++;
+  	  
+  	  clear_symbols(lambda_idx + 1);
+	
+	  code("\n@lambda_%s_exit:", (yyvsp[-4].s));
+	  code("\n\t\tMOV \t%%14,%%15");
+	  code("\n\t\tPOP \t%%14");
+	  code("\n\t\tRET");
+	  code("\n@main_body_%d:", main_part);
+	  main_part++;	
+  	}
+  	else
+  	{
+  	  err("Lambda function '%s' already exists", (yyvsp[-4].s));
+  	}
+  	
+  }
+#line 1552 "micko.tab.c"
+    break;
+
+  case 25:
+#line 218 "micko.y"
   {	
   	lambda_init_is_active = 1;
 	lambda_fun_param_amounts[lambda_fun_param_amounts_position] = num_of_lambda_params;
@@ -1543,36 +1560,35 @@ yyreduce:
 	num_of_lambda_params = 0;
 	lambda_fun_param_amounts_position++;
 	
-	code("\n\t\tSUBS\t%%15,$%d,%%15", 4*curr_params);
-        code("\n@lambda_%s_body:", get_name(fun_idx));
+        code("\n@lambda_%s_body:", curr_lambda_id);
 	
   }
-#line 1551 "micko.tab.c"
+#line 1567 "micko.tab.c"
     break;
 
-  case 25:
-#line 223 "micko.y"
+  case 26:
+#line 229 "micko.y"
   {
   	lambda_init_is_active = 0;
+  	gen_mov((yyvsp[0].i), FUN_REG);
   }
-#line 1559 "micko.tab.c"
+#line 1576 "micko.tab.c"
     break;
 
-  case 28:
-#line 235 "micko.y"
+  case 29:
+#line 242 "micko.y"
   {	
   	
   	int idx = lookup_lambda_symbol((yyvsp[0].s), LAMBDA, lambda_fun_num);
   	if (idx == NO_INDEX)
   	{
   	  curr_type = (yyvsp[-1].i);
-  	  //atr1 je redni broj lambda funkcije kojoj simbol pripada
-  	  insert_symbol((yyvsp[0].s), LAMBDA, (yyvsp[-1].i), lambda_fun_num, NO_ATR);
+  	  //atr1 je redni broj lambda funkcije kojoj simbol pripada, atr2 je redni broj parametra u f-ji
+  	  insert_symbol((yyvsp[0].s), LAMBDA, (yyvsp[-1].i), lambda_fun_num, num_of_lambda_params+1);
   	  int updated_idx = lookup_lambda_symbol((yyvsp[0].s), LAMBDA, lambda_fun_num);
   	  lambda_values[lambda_values_position] = updated_idx;
 	  lambda_values_position++;
 	  num_of_lambda_params++;
-	  (yyval.i) = (yyvsp[-1].i);
   	}
   	else
   	{
@@ -1580,11 +1596,11 @@ yyreduce:
   	}
   	
   }
-#line 1584 "micko.tab.c"
+#line 1600 "micko.tab.c"
     break;
 
-  case 30:
-#line 260 "micko.y"
+  case 31:
+#line 266 "micko.y"
   {
   	if (get_type((yyvsp[-2].i)) != get_type((yyvsp[0].i)))
   	{
@@ -1593,11 +1609,11 @@ yyreduce:
   	
   	(yyval.i) = gen_arop((yyvsp[-2].i), (yyvsp[-1].i), (yyvsp[0].i));
   }
-#line 1597 "micko.tab.c"
+#line 1613 "micko.tab.c"
     break;
 
-  case 32:
-#line 273 "micko.y"
+  case 33:
+#line 279 "micko.y"
   {
   	if (get_type((yyvsp[-2].i)) != get_type((yyvsp[0].i)))
   	{
@@ -1605,13 +1621,21 @@ yyreduce:
   	}
   	(yyval.i) = gen_arop((yyvsp[-2].i), (yyvsp[-1].i), (yyvsp[0].i));
   }
-#line 1609 "micko.tab.c"
+#line 1625 "micko.tab.c"
     break;
 
-  case 34:
-#line 286 "micko.y"
-      {   
-        (yyval.i) = lookup_symbol((yyvsp[0].s), VAR|PAR|LAMBDA);
+  case 35:
+#line 292 "micko.y"
+      { 
+      	if (lambda_init_is_active == 1)
+      	{
+      	  (yyval.i) = lookup_symbol((yyvsp[0].s), LAMBDA);
+      	}
+      	else
+      	{
+      	  (yyval.i) = lookup_symbol((yyvsp[0].s), VAR|PAR);
+      	}
+        
         if((yyval.i) == NO_INDEX)
           err("'%s' undeclared", (yyvsp[0].s));
         
@@ -1668,57 +1692,57 @@ yyreduce:
         }
         
       }
-#line 1672 "micko.tab.c"
+#line 1696 "micko.tab.c"
     break;
 
-  case 35:
-#line 346 "micko.y"
+  case 36:
+#line 360 "micko.y"
      {
        (yyval.i) = take_reg();
        gen_mov(FUN_REG, (yyval.i));
      }
-#line 1681 "micko.tab.c"
+#line 1705 "micko.tab.c"
     break;
 
-  case 36:
-#line 352 "micko.y"
+  case 37:
+#line 366 "micko.y"
     {
       (yyval.i) = take_reg();
       gen_mov(FUN_REG, (yyval.i));
     }
-#line 1690 "micko.tab.c"
-    break;
-
-  case 37:
-#line 358 "micko.y"
-      { (yyval.i) = (yyvsp[-1].i); }
-#line 1696 "micko.tab.c"
+#line 1714 "micko.tab.c"
     break;
 
   case 38:
-#line 363 "micko.y"
-      { (yyval.i) = insert_literal((yyvsp[0].s), INT); }
-#line 1702 "micko.tab.c"
+#line 372 "micko.y"
+      { (yyval.i) = (yyvsp[-1].i); }
+#line 1720 "micko.tab.c"
     break;
 
   case 39:
-#line 366 "micko.y"
-      { (yyval.i) = insert_literal((yyvsp[0].s), UINT); }
-#line 1708 "micko.tab.c"
+#line 377 "micko.y"
+      { (yyval.i) = insert_literal((yyvsp[0].s), INT); }
+#line 1726 "micko.tab.c"
     break;
 
   case 40:
-#line 371 "micko.y"
+#line 380 "micko.y"
+      { (yyval.i) = insert_literal((yyvsp[0].s), UINT); }
+#line 1732 "micko.tab.c"
+    break;
+
+  case 41:
+#line 385 "micko.y"
       {
         fcall_idx = lookup_symbol((yyvsp[0].s), FUN);
         if(fcall_idx == NO_INDEX)
           err("'%s' is not a function", (yyvsp[0].s));
       }
-#line 1718 "micko.tab.c"
+#line 1742 "micko.tab.c"
     break;
 
-  case 41:
-#line 377 "micko.y"
+  case 42:
+#line 391 "micko.y"
       {
         if(get_atr1(fcall_idx) != (yyvsp[-1].i))
           err("wrong number of arguments");
@@ -1728,149 +1752,150 @@ yyreduce:
         set_type(FUN_REG, get_type(fcall_idx));
         (yyval.i) = FUN_REG;
       }
-#line 1732 "micko.tab.c"
+#line 1756 "micko.tab.c"
     break;
 
-  case 42:
-#line 390 "micko.y"
+  case 43:
+#line 404 "micko.y"
       {
         lambda_call_is_active = 1;
         fcall_idx = lookup_symbol((yyvsp[0].s), LAMBDA_FUN);
         if(fcall_idx == NO_INDEX)
           err("'%s' is not a lambda function", (yyvsp[0].s));
       }
-#line 1743 "micko.tab.c"
+#line 1767 "micko.tab.c"
     break;
 
-  case 43:
-#line 397 "micko.y"
+  case 44:
+#line 411 "micko.y"
       {
+        // opet, zato sto je num_exp potencijalno poziv funkcije, pa se promeni fcall_idx
+        fcall_idx = lookup_symbol((yyvsp[-4].s), LAMBDA_FUN);
       	int num_of_args = get_atr1(fcall_idx);
         if(get_atr1(fcall_idx) != num_of_lambda_arguments)
           err("wrong number of arguments '%d', '%d'", num_of_args, num_of_lambda_arguments);
-        code("\n\t\t\tCALL\tlambda_%s", get_name(fcall_idx));
-        int i;
-          code("\n\t\t\tADDS\t%%15,$%d,%%15", num_of_lambda_arguments*4); 
+        code("\n\t\tCALL\t@lambda_%s", get_name(fcall_idx));
+        code("\n\t\tADDS\t%%15,$%d,%%15", num_of_lambda_arguments*4); 
         num_of_lambda_arguments = 0;
         set_type(FUN_REG, get_type(fcall_idx));
         (yyval.i) = FUN_REG;
         lambda_call_is_active = 0;
       }
-#line 1760 "micko.tab.c"
-    break;
-
-  case 44:
-#line 412 "micko.y"
-  {
-  	num_of_lambda_arguments++;
-  }
-#line 1768 "micko.tab.c"
+#line 1785 "micko.tab.c"
     break;
 
   case 45:
-#line 416 "micko.y"
+#line 427 "micko.y"
   {
   	num_of_lambda_arguments++;
   }
-#line 1776 "micko.tab.c"
+#line 1793 "micko.tab.c"
     break;
 
   case 46:
-#line 423 "micko.y"
-    { (yyval.i) = 0; }
-#line 1782 "micko.tab.c"
+#line 431 "micko.y"
+  {
+  	num_of_lambda_arguments++;
+  }
+#line 1801 "micko.tab.c"
     break;
 
   case 47:
-#line 426 "micko.y"
+#line 438 "micko.y"
+    { (yyval.i) = 0; }
+#line 1807 "micko.tab.c"
+    break;
+
+  case 48:
+#line 441 "micko.y"
     { 
       if(get_type(fcall_idx) != get_type((yyvsp[0].i)))
         err("incompatible type for argument '%d' and '%d'", fcall_idx, (yyvsp[0].i));
       free_if_reg((yyvsp[0].i));
-      code("\n\t\t\tPUSH\t");
+      code("\n\t\tPUSH\t");
       gen_sym_name((yyvsp[0].i));
       (yyval.i) = 1;
     }
-#line 1795 "micko.tab.c"
+#line 1820 "micko.tab.c"
     break;
 
-  case 48:
-#line 438 "micko.y"
+  case 49:
+#line 453 "micko.y"
     {
       if(get_type(fcall_idx) != get_type((yyvsp[0].i)))
         err("incompatible type for argument '%d' and '%d'", fcall_idx, (yyvsp[0].i));
       free_if_reg((yyvsp[0].i));
-      code("\n\t\t\tPUSH\t");
+      code("\n\t\tPUSH\t");
       gen_sym_name((yyvsp[0].i));
       (yyval.i) = 1;    
     }
-#line 1808 "micko.tab.c"
-    break;
-
-  case 49:
-#line 450 "micko.y"
-      { code("\n@exit%d:", (yyvsp[0].i)); }
-#line 1814 "micko.tab.c"
+#line 1833 "micko.tab.c"
     break;
 
   case 50:
-#line 453 "micko.y"
-      { code("\n@exit%d:", (yyvsp[-2].i)); }
-#line 1820 "micko.tab.c"
+#line 465 "micko.y"
+      { code("\n@exit%d:", (yyvsp[0].i)); }
+#line 1839 "micko.tab.c"
     break;
 
   case 51:
-#line 458 "micko.y"
+#line 468 "micko.y"
+      { code("\n@exit%d:", (yyvsp[-2].i)); }
+#line 1845 "micko.tab.c"
+    break;
+
+  case 52:
+#line 473 "micko.y"
       {
         (yyval.i) = ++lab_num;
         code("\n@if%d:", lab_num);
       }
-#line 1829 "micko.tab.c"
+#line 1854 "micko.tab.c"
     break;
 
-  case 52:
-#line 463 "micko.y"
+  case 53:
+#line 478 "micko.y"
       {
         code("\n\t\t%s\t@false%d", opp_jumps[(yyvsp[0].i)], (yyvsp[-1].i));
         code("\n@true%d:", (yyvsp[-1].i));
       }
-#line 1838 "micko.tab.c"
+#line 1863 "micko.tab.c"
     break;
 
-  case 53:
-#line 468 "micko.y"
+  case 54:
+#line 483 "micko.y"
       {
         code("\n\t\tJMP \t@exit%d", (yyvsp[-4].i));
         code("\n@false%d:", (yyvsp[-4].i));
         (yyval.i) = (yyvsp[-4].i);
       }
-#line 1848 "micko.tab.c"
+#line 1873 "micko.tab.c"
     break;
 
-  case 54:
-#line 477 "micko.y"
+  case 55:
+#line 492 "micko.y"
       {
         if(get_type((yyvsp[-2].i)) != get_type((yyvsp[0].i)))
           err("invalid operands: relational operator");
         (yyval.i) = (yyvsp[-1].i) + ((get_type((yyvsp[-2].i)) - 1) * RELOP_NUMBER);
         gen_cmp((yyvsp[-2].i), (yyvsp[0].i));
       }
-#line 1859 "micko.tab.c"
+#line 1884 "micko.tab.c"
     break;
 
-  case 55:
-#line 487 "micko.y"
+  case 56:
+#line 502 "micko.y"
       {
         if(get_type(fun_idx) != get_type((yyvsp[-1].i)))
           err("incompatible types in return");
         gen_mov((yyvsp[-1].i), FUN_REG);
         code("\n\t\tJMP \t@%s_exit", get_name(fun_idx));        
       }
-#line 1870 "micko.tab.c"
+#line 1895 "micko.tab.c"
     break;
 
 
-#line 1874 "micko.tab.c"
+#line 1899 "micko.tab.c"
 
       default: break;
     }
@@ -2102,7 +2127,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 495 "micko.y"
+#line 510 "micko.y"
 
 
 int yyerror(char *s) {

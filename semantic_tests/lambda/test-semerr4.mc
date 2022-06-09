@@ -5,6 +5,6 @@ int main(){
   unsigned a;
   int b;
   
-  x = lambda int c, int b : g;
+  lambda x = int c, int b : g;
   return 2;
 }

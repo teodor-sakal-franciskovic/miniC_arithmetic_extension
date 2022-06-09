@@ -37,16 +37,21 @@ void free_if_reg(int reg_index) {
 // SYMBOL
 void gen_sym_name(int index) {
   if(index > -1) {
-    if(get_kind(index) == VAR) // -n*4(%14)
+    if(get_kind(index) == VAR && get_atr2(index) == NO_ATR) // -n*4(%14)
       code("-%d(%%14)", get_atr1(index) * 4);
     else 
-      if(get_kind(index) == PAR) // m*4(%14)
+      if(get_kind(index) == PAR && get_atr2(index) == NO_ATR) // m*4(%14) 
         code("%d(%%14)", 4 + get_atr1(index) *4);
       else
-        if(get_kind(index) == LIT)
-          code("$%s", get_name(index));
-        else //function, reg
-          code("%s", get_name(index));
+      	if(get_kind(index) == LAMBDA){
+      	 //code("%d(%%14)", 4 + (num_of_params - get_atr2(index) + 1) * 4);
+      	 code("%d(%%14)", 4 + get_atr2(index) * 4);
+      	}
+      	else
+	 if(get_kind(index) == LIT)
+	   code("$%s", get_name(index));
+	 else //function, reg
+	   code("%s", get_name(index));
   }
 }
 
@@ -87,7 +92,7 @@ int gen_arop(int first_operand_index, int arop_type, int second_operand_index){
   free_if_reg(first_operand_index);
   int taken_reg = take_reg();
   gen_sym_name(taken_reg);
-  set_type(taken_reg, type);
+  set_type(taken_reg, type); 
   return taken_reg;
 }
 
