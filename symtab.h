@@ -33,7 +33,7 @@ int lookup_symbol(char *name, unsigned kind);
 int lookup_lambda_symbol(char *name, unsigned kind, unsigned atr1);
 
 //Vraca indeks pronadjene lambda funkcije ili vraca -1;
-int lookup_lambda_function(unsigned atr2, unsigned kind);
+int lookup_lambda_function(char* name, unsigned kind, unsigned atr1);
 
 // set i get metode za polja tabele simbola
 void     set_name(int index, char *name);

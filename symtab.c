@@ -75,7 +75,7 @@ int lookup_lambda_symbol(char *name, unsigned kind, unsigned atr1){
   for (i = first_empty - 1; i > FUN_REG; i--) {
     if (strcmp(symbol_table[i].name, name) == 0 
        && symbol_table[i].kind & kind 
-       && symbol_table[i].atr1 & atr1)
+       && symbol_table[i].atr1 == atr1)
     {
       return i;
     }
@@ -83,11 +83,15 @@ int lookup_lambda_symbol(char *name, unsigned kind, unsigned atr1){
   return -1;
 }
 
-int lookup_lambda_function(unsigned atr2, unsigned kind){
+int lookup_lambda_function(char* name, unsigned kind, unsigned atr1){
   int i;
   for (i = first_empty - 1; i > FUN_REG; i--) {
-    if (symbol_table[i].kind, kind && symbol_table[i].atr2 & atr2)
+    if (strcmp(symbol_table[i].name, name) == 0 
+       && symbol_table[i].kind & kind 
+       && symbol_table[i].atr1 == atr1)
+    {
       return i;
+    }
   }
   return -1;
 }

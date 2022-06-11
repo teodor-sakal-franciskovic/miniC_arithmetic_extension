@@ -186,13 +186,19 @@ lambda_statement
     {
     	curr_lambda_id = $2;
     	code("\n\t\tJMP \t@%s_body_%d", get_name(fun_idx), main_part);
-        code("\n@lambda_%s:", $2);
-        code("\n\t\tPUSH\t%%14");
-        code("\n\t\tMOV \t%%15,%%14");
+    	
     } 
+    //prvo ce izgenerisati body pa onda pocetak pa onda exit, znaci sa pocetka treba jump na body, a sa bodyja treba jump na exit
   _ASSIGN lambda_exp _SEMICOLON
   {
-  	lambda_idx = lookup_symbol($2, LAMBDA_FUN);
+  	code("\n\t\tJMP \t@lambda_%s_%d_exit", $2, curr_params);
+  	
+  	code("\n@lambda_%s_%d:", $2, curr_params);
+        code("\n\t\tPUSH\t%%14");
+        code("\n\t\tMOV \t%%15,%%14");
+	code("\n\t\tJMP \t@lambda_%s_%d_body", $2, curr_params);  	
+  	
+  	lambda_idx = lookup_lambda_function($2, LAMBDA_FUN, curr_params); //tu dodati pretragu po broju parametara
   	if (lambda_idx == NO_INDEX)
   	{
   	  //atr1 je broj parametara lambda f-je, atr2 je redni broj lambda funkcije
@@ -201,7 +207,7 @@ lambda_statement
   	  
   	  clear_symbols(lambda_idx + 1);
 	
-	  code("\n@lambda_%s_exit:", $2);
+	  code("\n@lambda_%s_%d_exit:", $2, curr_params);
 	  code("\n\t\tMOV \t%%14,%%15");
 	  code("\n\t\tPOP \t%%14");
 	  code("\n\t\tRET");
@@ -225,7 +231,7 @@ lambda_exp
 	num_of_lambda_params = 0;
 	lambda_fun_param_amounts_position++;
 	
-        code("\n@lambda_%s_body:", curr_lambda_id);
+        code("\n@lambda_%s_%d_body:", curr_lambda_id, curr_params);
 	
   } 
     _COLON num_exp
@@ -421,11 +427,12 @@ lambda_call
         }
         curr_fun_params_index = 0;
         // opet, zato sto je num_exp potencijalno poziv funkcije, pa se promeni fcall_idx
-        fcall_idx = lookup_symbol($2, LAMBDA_FUN);
+        //TU DRUGA PRETRAGA
+        fcall_idx = lookup_lambda_function($2, LAMBDA_FUN, num_of_lambda_arguments);
       	int num_of_args = get_atr1(fcall_idx);
         if(get_atr1(fcall_idx) != num_of_lambda_arguments)
           err("wrong number of arguments '%d', '%d'", num_of_args, num_of_lambda_arguments);
-        code("\n\t\tCALL\t@lambda_%s", get_name(fcall_idx));
+        code("\n\t\tCALL\t@lambda_%s_%d", get_name(fcall_idx), num_of_args);
         code("\n\t\tADDS\t%%15,$%d,%%15", num_of_lambda_arguments*4); 
         num_of_lambda_arguments = 0;
         set_type(FUN_REG, get_type(fcall_idx));
