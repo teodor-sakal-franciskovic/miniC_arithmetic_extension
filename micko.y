@@ -323,43 +323,9 @@ exp
         if (lambda_init_is_active == 1) {
           	int idx = lookup_lambda_symbol($1, LAMBDA, lambda_fun_num);
           	//mozda visak ceo ovaj deo, izuci
-		if (idx != NO_INDEX)
+		if (idx == NO_INDEX)
 		{
-		
-		  int value_exists = 0;
-		  int lambda_fun_num_local = get_atr1(idx);
-		  int curr_num_of_params = lambda_fun_param_amounts[lambda_fun_num_local - 1];
-		  
-		  int i;
-		  int j;
-		  
-		  int params_till_curr_fun = 0;
-		  for (i = 0; i < 100; i++){
-		    if (i < lambda_fun_num - 1){
-		      params_till_curr_fun = params_till_curr_fun + lambda_fun_param_amounts[i];
-		    }
-		    else if (i == lambda_fun_num - 1){
-		      break;
-		    }
-		  }
-		  		           
-		  for (j = params_till_curr_fun; j < params_till_curr_fun + curr_num_of_params; j++)
-		  {
-		    if (lambda_values[j] == idx)
-		    {
-		      value_exists = 1;
-		      break;
-		    }
-		  }
-		  
-		  if (value_exists == 0)
-		  {
-		    err("'%s' is not used in this lambda function!\n", $1);
-		  }
-		}
-		else
-		{
-		     err("'%s' is not declared in lambda parameters, but is used", $1);
+			err("'%s' is not declared in lambda parameters, but is used", $1);
 		}
         }
         

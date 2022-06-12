@@ -570,9 +570,9 @@ static const yytype_int16 yyrline[] =
        0,    79,    79,    87,    88,    93,    92,   118,   120,   130,
      129,   139,   140,   144,   154,   155,   159,   160,   161,   162,
      163,   167,   171,   186,   185,   227,   226,   245,   246,   250,
-     273,   274,   286,   287,   298,   300,   368,   374,   380,   385,
-     388,   394,   393,   413,   412,   444,   448,   456,   458,   470,
-     482,   485,   491,   496,   490,   509,   519
+     273,   274,   286,   287,   298,   300,   334,   340,   346,   351,
+     354,   360,   359,   379,   378,   410,   414,   422,   424,   436,
+     448,   451,   457,   462,   456,   475,   485
 };
 #endif
 
@@ -1659,98 +1659,64 @@ yyreduce:
         if (lambda_init_is_active == 1) {
           	int idx = lookup_lambda_symbol((yyvsp[0].s), LAMBDA, lambda_fun_num);
           	//mozda visak ceo ovaj deo, izuci
-		if (idx != NO_INDEX)
+		if (idx == NO_INDEX)
 		{
-		
-		  int value_exists = 0;
-		  int lambda_fun_num_local = get_atr1(idx);
-		  int curr_num_of_params = lambda_fun_param_amounts[lambda_fun_num_local - 1];
-		  
-		  int i;
-		  int j;
-		  
-		  int params_till_curr_fun = 0;
-		  for (i = 0; i < 100; i++){
-		    if (i < lambda_fun_num - 1){
-		      params_till_curr_fun = params_till_curr_fun + lambda_fun_param_amounts[i];
-		    }
-		    else if (i == lambda_fun_num - 1){
-		      break;
-		    }
-		  }
-		  		           
-		  for (j = params_till_curr_fun; j < params_till_curr_fun + curr_num_of_params; j++)
-		  {
-		    if (lambda_values[j] == idx)
-		    {
-		      value_exists = 1;
-		      break;
-		    }
-		  }
-		  
-		  if (value_exists == 0)
-		  {
-		    err("'%s' is not used in this lambda function!\n", (yyvsp[0].s));
-		  }
-		}
-		else
-		{
-		     err("'%s' is not declared in lambda parameters, but is used", (yyvsp[0].s));
+			err("'%s' is not declared in lambda parameters, but is used", (yyvsp[0].s));
 		}
         }
         
       }
-#line 1704 "micko.tab.c"
+#line 1670 "micko.tab.c"
     break;
 
   case 36:
-#line 369 "micko.y"
+#line 335 "micko.y"
      {
        (yyval.i) = take_reg();
        gen_mov(FUN_REG, (yyval.i));
      }
-#line 1713 "micko.tab.c"
+#line 1679 "micko.tab.c"
     break;
 
   case 37:
-#line 375 "micko.y"
+#line 341 "micko.y"
     {
       (yyval.i) = take_reg();
       gen_mov(FUN_REG, (yyval.i));
     }
-#line 1722 "micko.tab.c"
+#line 1688 "micko.tab.c"
     break;
 
   case 38:
-#line 381 "micko.y"
+#line 347 "micko.y"
       { (yyval.i) = (yyvsp[-1].i); }
-#line 1728 "micko.tab.c"
+#line 1694 "micko.tab.c"
     break;
 
   case 39:
-#line 386 "micko.y"
+#line 352 "micko.y"
       { (yyval.i) = insert_literal((yyvsp[0].s), INT); }
-#line 1734 "micko.tab.c"
+#line 1700 "micko.tab.c"
     break;
 
   case 40:
-#line 389 "micko.y"
+#line 355 "micko.y"
       { (yyval.i) = insert_literal((yyvsp[0].s), UINT); }
-#line 1740 "micko.tab.c"
+#line 1706 "micko.tab.c"
     break;
 
   case 41:
-#line 394 "micko.y"
+#line 360 "micko.y"
       {
         fcall_idx = lookup_symbol((yyvsp[0].s), FUN);
         if(fcall_idx == NO_INDEX)
           err("'%s' is not a function", (yyvsp[0].s));
       }
-#line 1750 "micko.tab.c"
+#line 1716 "micko.tab.c"
     break;
 
   case 42:
-#line 400 "micko.y"
+#line 366 "micko.y"
       {
         if(get_atr1(fcall_idx) != (yyvsp[-1].i))
           err("wrong number of arguments");
@@ -1760,11 +1726,11 @@ yyreduce:
         set_type(FUN_REG, get_type(fcall_idx));
         (yyval.i) = FUN_REG;
       }
-#line 1764 "micko.tab.c"
+#line 1730 "micko.tab.c"
     break;
 
   case 43:
-#line 413 "micko.y"
+#line 379 "micko.y"
       {
         lambda_call_is_active = 1;
         fcall_idx = lookup_symbol((yyvsp[0].s), LAMBDA_FUN);
@@ -1772,11 +1738,11 @@ yyreduce:
         if(fcall_idx == NO_INDEX)
           err("'%s' is not a lambda function", (yyvsp[0].s));
       }
-#line 1776 "micko.tab.c"
+#line 1742 "micko.tab.c"
     break;
 
   case 44:
-#line 421 "micko.y"
+#line 387 "micko.y"
       {
         int i;
         for (i = curr_fun_params_index - 1; i > -1; i--){
@@ -1798,33 +1764,33 @@ yyreduce:
         (yyval.i) = FUN_REG;
         lambda_call_is_active = 0;
       }
-#line 1802 "micko.tab.c"
+#line 1768 "micko.tab.c"
     break;
 
   case 45:
-#line 445 "micko.y"
+#line 411 "micko.y"
   {
   	num_of_lambda_arguments++;
   }
-#line 1810 "micko.tab.c"
+#line 1776 "micko.tab.c"
     break;
 
   case 46:
-#line 449 "micko.y"
+#line 415 "micko.y"
   {
   	num_of_lambda_arguments++;
   }
-#line 1818 "micko.tab.c"
+#line 1784 "micko.tab.c"
     break;
 
   case 47:
-#line 456 "micko.y"
+#line 422 "micko.y"
     { (yyval.i) = 0; }
-#line 1824 "micko.tab.c"
+#line 1790 "micko.tab.c"
     break;
 
   case 48:
-#line 459 "micko.y"
+#line 425 "micko.y"
     { 
       if(get_type(fcall_idx) != get_type((yyvsp[0].i)))
         err("incompatible type for argument '%d' and '%d'", fcall_idx, (yyvsp[0].i));
@@ -1833,11 +1799,11 @@ yyreduce:
       gen_sym_name((yyvsp[0].i));
       (yyval.i) = 1;
     }
-#line 1837 "micko.tab.c"
+#line 1803 "micko.tab.c"
     break;
 
   case 49:
-#line 471 "micko.y"
+#line 437 "micko.y"
     {
       if(get_type(lambda_idx) != get_type((yyvsp[0].i)))
         err("incompatible type for argument '%d' and '%d'", fcall_idx, (yyvsp[0].i));
@@ -1846,73 +1812,73 @@ yyreduce:
       curr_fun_params_index++;
       (yyval.i) = 1;
     }
-#line 1850 "micko.tab.c"
+#line 1816 "micko.tab.c"
     break;
 
   case 50:
-#line 483 "micko.y"
+#line 449 "micko.y"
       { code("\n@exit%d:", (yyvsp[0].i)); }
-#line 1856 "micko.tab.c"
+#line 1822 "micko.tab.c"
     break;
 
   case 51:
-#line 486 "micko.y"
+#line 452 "micko.y"
       { code("\n@exit%d:", (yyvsp[-2].i)); }
-#line 1862 "micko.tab.c"
+#line 1828 "micko.tab.c"
     break;
 
   case 52:
-#line 491 "micko.y"
+#line 457 "micko.y"
       {
         (yyval.i) = ++lab_num;
         code("\n@if%d:", lab_num);
       }
-#line 1871 "micko.tab.c"
+#line 1837 "micko.tab.c"
     break;
 
   case 53:
-#line 496 "micko.y"
+#line 462 "micko.y"
       {
         code("\n\t\t%s\t@false%d", opp_jumps[(yyvsp[0].i)], (yyvsp[-1].i));
         code("\n@true%d:", (yyvsp[-1].i));
       }
-#line 1880 "micko.tab.c"
+#line 1846 "micko.tab.c"
     break;
 
   case 54:
-#line 501 "micko.y"
+#line 467 "micko.y"
       {
         code("\n\t\tJMP \t@exit%d", (yyvsp[-4].i));
         code("\n@false%d:", (yyvsp[-4].i));
         (yyval.i) = (yyvsp[-4].i);
       }
-#line 1890 "micko.tab.c"
+#line 1856 "micko.tab.c"
     break;
 
   case 55:
-#line 510 "micko.y"
+#line 476 "micko.y"
       {
         if(get_type((yyvsp[-2].i)) != get_type((yyvsp[0].i)))
           err("invalid operands: relational operator");
         (yyval.i) = (yyvsp[-1].i) + ((get_type((yyvsp[-2].i)) - 1) * RELOP_NUMBER);
         gen_cmp((yyvsp[-2].i), (yyvsp[0].i));
       }
-#line 1901 "micko.tab.c"
+#line 1867 "micko.tab.c"
     break;
 
   case 56:
-#line 520 "micko.y"
+#line 486 "micko.y"
       {
         if(get_type(fun_idx) != get_type((yyvsp[-1].i)))
           err("incompatible types in return");
         gen_mov((yyvsp[-1].i), FUN_REG);
         code("\n\t\tJMP \t@%s_exit", get_name(fun_idx));        
       }
-#line 1912 "micko.tab.c"
+#line 1878 "micko.tab.c"
     break;
 
 
-#line 1916 "micko.tab.c"
+#line 1882 "micko.tab.c"
 
       default: break;
     }
@@ -2144,7 +2110,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 528 "micko.y"
+#line 494 "micko.y"
 
 
 int yyerror(char *s) {
