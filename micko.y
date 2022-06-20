@@ -194,7 +194,7 @@ lambda_statement
   _ASSIGN lambda_exp _SEMICOLON
   {
   	
-  	lambda_idx = lookup_lambda_function($2, LAMBDA_FUN, curr_params); //tu dodati pretragu po broju parametara
+  	lambda_idx = lookup_lambda_function($2, LAMBDA_FUN, curr_params);
   	if (lambda_idx == NO_INDEX)
   	{
   	  //atr1 je broj parametara lambda f-je, atr2 je redni broj lambda funkcije
@@ -323,7 +323,6 @@ exp
         
         if (lambda_init_is_active == 1) {
           	int idx = lookup_lambda_symbol($1, LAMBDA, lambda_fun_num);
-          	//mozda visak ceo ovaj deo, izuci
 		if (idx == NO_INDEX)
 		{
 			err("'%s' is not declared in lambda parameters, but is used", $1);
@@ -495,16 +494,15 @@ return_statement
         if(get_type(fun_idx) != get_type($2))
           err("incompatible types in return");
         gen_mov($2, FUN_REG);
-	int j;
+        code("\n\t\tJMP \t@%s_exit", get_name(fun_idx));  
+        int j;
 	//oslobodi registre
 	if (register_indexes_index > 0){
 	  for (j = register_indexes_index - 1; j > -1; j--){
             free_if_reg(register_indexes[j]);
-            printf("%d", j);
           }
           register_indexes_index = 0;
-	}
-        code("\n\t\tJMP \t@%s_exit", get_name(fun_idx));        
+	}      
       }
   ;
 
