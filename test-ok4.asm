@@ -18,6 +18,10 @@ main:
 		SUBS	%15,$8,%15
 @main_body:
 		JMP 	@main_body_0
+@lambda_x_2:
+		PUSH	%14
+		MOV 	%15,%14
+		JMP 	@lambda_x_2_body
 @lambda_x_2_body:
 		ADDS	$3,8(%14),%0
 		ADDS	%0,12(%14),%0
@@ -25,10 +29,6 @@ main:
 		MULS	%0,%1,%0
 		MOV 	%0,%13
 		JMP 	@lambda_x_2_exit
-@lambda_x_2:
-		PUSH	%14
-		MOV 	%15,%14
-		JMP 	@lambda_x_2_body
 @lambda_x_2_exit:
 		MOV 	%14,%15
 		POP 	%14

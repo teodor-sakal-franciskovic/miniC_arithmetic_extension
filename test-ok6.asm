@@ -5,14 +5,14 @@ main:
 		SUBS	%15,$12,%15
 @main_body:
 		JMP 	@main_body_0
-@lambda_x_2_body:
-		ADDS	8(%14),12(%14),%0
-		MOV 	%0,%13
-		JMP 	@lambda_x_2_exit
 @lambda_x_2:
 		PUSH	%14
 		MOV 	%15,%14
 		JMP 	@lambda_x_2_body
+@lambda_x_2_body:
+		ADDS	8(%14),12(%14),%0
+		MOV 	%0,%13
+		JMP 	@lambda_x_2_exit
 @lambda_x_2_exit:
 		MOV 	%14,%15
 		POP 	%14
@@ -20,14 +20,14 @@ main:
 @main_body_0:
 		MOV 	$3,-4(%14)
 		JMP 	@main_body_1
-@lambda_x_1_body:
-		ADDS	8(%14),$1,%0
-		MOV 	%0,%13
-		JMP 	@lambda_x_1_exit
 @lambda_x_1:
 		PUSH	%14
 		MOV 	%15,%14
 		JMP 	@lambda_x_1_body
+@lambda_x_1_body:
+		ADDS	8(%14),$1,%0
+		MOV 	%0,%13
+		JMP 	@lambda_x_1_exit
 @lambda_x_1_exit:
 		MOV 	%14,%15
 		POP 	%14

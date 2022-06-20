@@ -191,15 +191,8 @@ lambda_statement
     	code("\n\t\tJMP \t@%s_body_%d", get_name(fun_idx), main_part);
     	
     } 
-    //prvo ce izgenerisati body pa onda pocetak pa onda exit, znaci sa pocetka treba jump na body, a sa bodyja treba jump na exit
   _ASSIGN lambda_exp _SEMICOLON
   {
-  	code("\n\t\tJMP \t@lambda_%s_%d_exit", $2, curr_params);
-  	//izmeni redosled jumpova, u lambda_Exp stavi ovo, posle lambda_parameters, pre num_exp
-  	code("\n@lambda_%s_%d:", $2, curr_params);
-        code("\n\t\tPUSH\t%%14");
-        code("\n\t\tMOV \t%%15,%%14");
-	code("\n\t\tJMP \t@lambda_%s_%d_body", $2, curr_params);  	
   	
   	lambda_idx = lookup_lambda_function($2, LAMBDA_FUN, curr_params); //tu dodati pretragu po broju parametara
   	if (lambda_idx == NO_INDEX)
@@ -234,6 +227,10 @@ lambda_exp
 	num_of_lambda_params = 0;
 	lambda_fun_param_amounts_position++;
 	
+	code("\n@lambda_%s_%d:", curr_lambda_id, curr_params);
+        code("\n\t\tPUSH\t%%14");
+        code("\n\t\tMOV \t%%15,%%14");
+	code("\n\t\tJMP \t@lambda_%s_%d_body", curr_lambda_id, curr_params);  	
         code("\n@lambda_%s_%d_body:", curr_lambda_id, curr_params);
 	
   } 
@@ -241,6 +238,7 @@ lambda_exp
   {
   	lambda_init_is_active = 0;
   	gen_mov($4, FUN_REG);
+  	code("\n\t\tJMP \t@lambda_%s_%d_exit", curr_lambda_id, curr_params);
   }
   ;
   
@@ -407,7 +405,7 @@ lambda_call
         set_type(FUN_REG, get_type(fcall_idx));
         $$ = FUN_REG;
         lambda_call_is_active = 0;
-        //oslobodi registre - prva ideja, nije funkcionalna za slucaj vise lambda poziva u jednoj liniji koda, ali radi za vise num_exp parametara u lambda funkciji
+        //oslobodi registre - nije funkcionalno za slucaj vise lambda poziva u jednoj liniji koda, ali radi za vise num_exp parametara u lambda funkciji
         //int j;
         //for (j = register_indexes_index - 1; j > -1; j--){
         //  free_if_reg(register_indexes[j]);
@@ -497,6 +495,15 @@ return_statement
         if(get_type(fun_idx) != get_type($2))
           err("incompatible types in return");
         gen_mov($2, FUN_REG);
+	int j;
+	//oslobodi registre
+	if (register_indexes_index > 0){
+	  for (j = register_indexes_index - 1; j > -1; j--){
+            free_if_reg(register_indexes[j]);
+            printf("%d", j);
+          }
+          register_indexes_index = 0;
+	}
         code("\n\t\tJMP \t@%s_exit", get_name(fun_idx));        
       }
   ;
