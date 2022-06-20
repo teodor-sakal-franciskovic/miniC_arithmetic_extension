@@ -31,6 +31,9 @@
   int curr_params = 0;
   int lambda_call_is_active = 0;
   int lambda_init_is_active = 0;
+  //dodaj lambda_argument
+  int register_indexes[20];
+  int register_indexes_index = 0;
   
   int curr_fun_params[100];
   int curr_fun_params_index = 0;
@@ -192,7 +195,7 @@ lambda_statement
   _ASSIGN lambda_exp _SEMICOLON
   {
   	code("\n\t\tJMP \t@lambda_%s_%d_exit", $2, curr_params);
-  	
+  	//izmeni redosled jumpova, u lambda_Exp stavi ovo, posle lambda_parameters, pre num_exp
   	code("\n@lambda_%s_%d:", $2, curr_params);
         code("\n\t\tPUSH\t%%14");
         code("\n\t\tMOV \t%%15,%%14");
@@ -404,6 +407,12 @@ lambda_call
         set_type(FUN_REG, get_type(fcall_idx));
         $$ = FUN_REG;
         lambda_call_is_active = 0;
+        //oslobodi registre - prva ideja, nije funkcionalna za slucaj vise lambda poziva u jednoj liniji koda, ali radi za vise num_exp parametara u lambda funkciji
+        //int j;
+        //for (j = register_indexes_index - 1; j > -1; j--){
+        //  free_if_reg(register_indexes[j]);
+        //}
+        //register_indexes_index = 0;
       }
   ;
 lambda_arguments
@@ -437,9 +446,10 @@ lambda_argument
     {
       if(get_type(lambda_idx) != get_type($1))
         err("incompatible type for argument '%d' and '%d'", fcall_idx, $1);
-      free_if_reg($1);
       curr_fun_params[curr_fun_params_index] = $1;
       curr_fun_params_index++;
+      register_indexes[register_indexes_index] = $1;
+      register_indexes_index++;
       $$ = 1;
     }
   ;

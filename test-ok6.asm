@@ -18,6 +18,7 @@ main:
 		POP 	%14
 		RET
 @main_body_0:
+		MOV 	$3,-4(%14)
 		JMP 	@main_body_1
 @lambda_x_1_body:
 		ADDS	8(%14),$1,%0

@@ -80,6 +80,7 @@ void gen_mov(int input_index, int output_index) {
   free_if_reg(input_index);
 }
 
+//dodaj ukupan broj param, prboaj
 int gen_arop(int first_operand_index, int arop_type, int second_operand_index){
   int type = get_type(first_operand_index);
   code("\n\t\t%s\t", ar_instructions[arop_type + (type - 1) * AROP_NUMBER]);
